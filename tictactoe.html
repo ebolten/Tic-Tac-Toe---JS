@@ -1,0 +1,233 @@
+<html>
+<script>
+    let players = ['X','O'];
+    let player = players[Math.floor(Math.random() * 2)];
+
+  
+    // load new hashmap with board
+    function loadBoard() {
+        let gameBoard = new Map();
+        for (var i = 1; i < 10; i++) {
+            gameBoard.set(i.toString(),"");
+        }
+        return gameBoard;
+    }
+
+
+    function countOccurence(arr) {
+        numX = 0;
+        numO = 0;
+        for (var i = 0; i < arr.length; i++) {
+            if (arr[i] === "X") {
+                numX += 1;
+                if (numX === 3) { return "X"; } 
+            }
+            else if (arr[i] === "O") { 
+                numO += 1; 
+                if (numO === 3) { return "O"; } 
+            }
+        }
+        return "";
+    }
+
+    // check for a diagonal winner
+    function checkDiagonals(board) {
+        let forwardDiagonal = countOccurence([board.get("1"),board.get("5"),board.get("9")]);
+        let backwardDiagonal = countOccurence([board.get("3"),board.get("5"),board.get("7")]);
+
+        if (forwardDiagonal !== "") { return forwardDiagonal; }
+        if (backwardDiagonal){ return backwardDiagonal; }
+    }
+
+    // check for winners going down
+    function checkDown(board) {
+        downLeft = countOccurence([board.get("1"),board.get("4"),board.get("7")]);
+        downMid = countOccurence([board.get("2"),board.get("5"),board.get("8")]);
+        downRight = countOccurence([board.get("3"),board.get("6"),board.get("9")]);
+
+        if (downLeft) { return downLeft; }
+        if (downMid){ return downMid; }
+        if (downRight) { return downRight; }
+    }
+
+    // check for winners going across
+    function checkAcross(board) {
+        acrossTop = countOccurence([board.get("1"),board.get("2"),board.get("3")]);
+        acrossMid = countOccurence([board.get("4"),board.get("5"),board.get("6")]);
+        acrossBottom = countOccurence([board.get("7"),board.get("8"),board.get("9")]);
+
+        if (acrossTop) { return acrossTop; }
+        if (acrossMid){ return acrossMid; }
+        if (acrossBottom) { return acrossBottom; }
+    }
+
+
+    function checkWinner(board) {
+        let diagonal = checkDiagonals(board);
+        let down = checkDown(board);
+        let across = checkAcross(board);
+
+        if (diagonal) { 
+            return diagonal; 
+        }
+        else if (down) { 
+            return down; 
+        }
+        else if (across) { 
+            return across; 
+        }
+        return "";
+    }
+
+
+    // when the DOM content loads
+    document.addEventListener('DOMContentLoaded',function(){
+        var modal = document.getElementById("modal-div");
+        var span = document.getElementsByClassName("close")[0];
+
+        let gameBoard = loadBoard(); // load the empty board
+        let gameBtn = document.getElementById("game-btn"); // button to begin game
+        if (gameBoard) {
+            //gameBtn.style.visibility = "visible"; // game button becomes visible after board loads
+
+            //gameBtn.onclick = function() {
+            // get all squares on board
+            let squares = document.getElementsByClassName("square-sm");
+            for (var i = 0; i < squares.length; i++) {
+                squares[i].onclick = function() { // onclick method for square
+                    let square = document.getElementById(this.id); // get square object
+                    
+                    // create new text for square and add styling
+                    playerNow = document.createElement('h1');
+                    playerNow.innerText = player;
+                    playerNow.style.position = 'fixed'; playerNow.style.marginLeft = '50'; playerNow.style.marginRight = '50';
+                    playerNow.style.marginTop = '50'; playerNow.style.marginBottom = '50';
+                    
+                    // set turn in gameboard
+                    if (gameBoard.get(this.id) === "") { // if the spot is not filled
+                        gameBoard.set(this.id,player);
+                        square.appendChild(playerNow);
+
+                        let win = checkWinner(gameBoard);
+                        if (win) {
+                            document.getElementById('modal-header').innerText = `${player} Is The Winner!`;
+                            modal.style.display = "block";
+                            // when the user clicks anywhere outside of the modal, close it
+                            span.onclick = function() {
+                                modal.style.display = "none";
+                            }
+                        }
+
+                        if (i % 2 === 0) { // change players per turn
+                            if (player === "X") { player = "O"; }
+                            else { player = "X"; }
+                        } else if (i % 2 !== 0) { // depends on even/odd (every other turn)
+                            if (player === "X") { player = "O"; }
+                            else { player = "X"; }
+                        }
+                    } else {
+                        document.getElementById('modal-header').innerText = "That Spot is Taken!";
+                        modal.style.display = "block";
+                        // when the user clicks anywhere outside of the modal, close it
+                        span.onclick = function() {
+                            modal.style.display = "none";
+                        }
+                    }
+
+                }
+                
+            }
+        }
+        //}
+    })
+</script>
+
+<style>
+.square {
+    height:500px;
+    width:500px;
+    margin-left:auto;
+    margin-right:auto;
+    border: 1px solid black;
+    background-color:transparent;
+    text-align:center;
+}
+.square-sm {
+    height:132px;
+    width:132px;
+    margin-left:auto;
+    margin-right:auto;
+    border: 1px solid black;
+    background-color:transparent;
+    position:relative;
+    padding:15px;
+    display:inline-block;
+}
+/* the modal window */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0,0,0);
+    background-color: rgba(0,0,0,0.4);
+  }
+  
+  /* modal content */
+  .modal-content {
+    text-align:center;
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 275px;
+  }
+  
+  /* close button */
+  .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+  }
+  
+  .close:hover,
+  .close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+  }
+</style>
+
+<body>
+
+    <!-- modal for error/winner messages -->
+    <div id="modal-div" class="modal">
+        <!-- modal content -->
+        <div class="modal-content">
+        <span class="close">&times;</span>
+        <h1 id="modal-header" style="color:#E9002B;font-family:'Poppins', sans-serif;"></h1>
+        </div>
+    </div>
+
+    <button id="game-btn" style="visibility:hidden"> Begin Game </button>
+
+    <div class="square">
+        <div id="1" class="square-sm"></div>
+        <div id="2" class="square-sm"></div>
+        <div id="3" class="square-sm"></div>
+        <br/>
+        <div id="4" class="square-sm"></div>
+        <div id="5" class="square-sm"></div>
+        <div id="6" class="square-sm"></div>
+        <br/>
+        <div id="7" class="square-sm"></div>
+        <div id="8" class="square-sm"></div>
+        <div id="9" class="square-sm"></div>
+    </div>
+</body>
+</html>
