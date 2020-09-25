@@ -1,249 +1,325 @@
 <html>
-<!-- Tic Tac Toe made with HTML, CSS and JS -->
-<script>
-    let players = ['X','O'];
-    let player = players[Math.floor(Math.random() * 2)];
-    let turn = 0;
-  
-    // load new hashmap with board
-    function loadBoard() {
-        let gameBoard = new Map();
-        for (var i = 1; i < 10; i++) {
-            gameBoard.set(i.toString(),"");
-        }
-        return gameBoard;
-    }
-
-    // count the number of occurences of X or O in the array
-    function countOccurence(arr) {
-        numX = 0;
-        numO = 0;
-        for (var i = 0; i < arr.length; i++) {
-            if (arr[i] === "X") {
-                numX += 1;
-                if (numX === 3) { return "X"; } 
+    <head>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+    </head>
+    <!-- Tic Tac Toe made with HTML, CSS and JS -->
+    <script>
+        let players = ['X','O'];
+        let player = players[Math.floor(Math.random() * 2)];
+        let turn = 0;
+        let currentScore = {"X":0,"O":0};
+    
+        // load new hashmap with board
+        function loadBoard() {
+            let gameBoard = new Map();
+            for (var i = 1; i < 10; i++) {
+                gameBoard.set(i.toString(),"");
             }
-            else if (arr[i] === "O") { 
-                numO += 1; 
-                if (numO === 3) { return "O"; } 
-            }
+            return gameBoard;
         }
-        return "";
-    }
 
-    // check for a diagonal winner
-    function checkDiagonals(board) {
-        let forwardDiagonal = countOccurence([board.get("1"),board.get("5"),board.get("9")]);
-        let backwardDiagonal = countOccurence([board.get("3"),board.get("5"),board.get("7")]);
+        // count the number of occurences of X or O in the array
+        function countOccurence(arr) {
+            numX = 0;
+            numO = 0;
+            for (var i = 0; i < arr.length; i++) {
+                if (arr[i] === "X") {
+                    numX += 1;
+                    if (numX === 3) { return "X"; } 
+                }
+                else if (arr[i] === "O") { 
+                    numO += 1; 
+                    if (numO === 3) { return "O"; } 
+                }
+            }
+            return "";
+        }
 
-        if (forwardDiagonal !== "") { return forwardDiagonal; }
-        if (backwardDiagonal){ return backwardDiagonal; }
-    }
+        // check for a diagonal winner
+        function checkDiagonals(board) {
+            let forwardDiagonal = countOccurence([board.get("1"),board.get("5"),board.get("9")]);
+            let backwardDiagonal = countOccurence([board.get("3"),board.get("5"),board.get("7")]);
 
-    // check for winners going down
-    function checkDown(board) {
-        downLeft = countOccurence([board.get("1"),board.get("4"),board.get("7")]);
-        downMid = countOccurence([board.get("2"),board.get("5"),board.get("8")]);
-        downRight = countOccurence([board.get("3"),board.get("6"),board.get("9")]);
+            if (forwardDiagonal !== "") { return forwardDiagonal; }
+            if (backwardDiagonal){ return backwardDiagonal; }
+        }
 
-        if (downLeft) { return downLeft; }
-        if (downMid){ return downMid; }
-        if (downRight) { return downRight; }
-    }
+        // check for winners going down
+        function checkDown(board) {
+            downLeft = countOccurence([board.get("1"),board.get("4"),board.get("7")]);
+            downMid = countOccurence([board.get("2"),board.get("5"),board.get("8")]);
+            downRight = countOccurence([board.get("3"),board.get("6"),board.get("9")]);
 
-    // check for winners going across
-    function checkAcross(board) {
-        acrossTop = countOccurence([board.get("1"),board.get("2"),board.get("3")]);
-        acrossMid = countOccurence([board.get("4"),board.get("5"),board.get("6")]);
-        acrossBottom = countOccurence([board.get("7"),board.get("8"),board.get("9")]);
+            if (downLeft) { return downLeft; }
+            if (downMid){ return downMid; }
+            if (downRight) { return downRight; }
+        }
 
-        if (acrossTop) { return acrossTop; }
-        if (acrossMid){ return acrossMid; }
-        if (acrossBottom) { return acrossBottom; }
-    }
+        // check for winners going across
+        function checkAcross(board) {
+            acrossTop = countOccurence([board.get("1"),board.get("2"),board.get("3")]);
+            acrossMid = countOccurence([board.get("4"),board.get("5"),board.get("6")]);
+            acrossBottom = countOccurence([board.get("7"),board.get("8"),board.get("9")]);
 
-    // check for winners diagonally, down or across
-    function checkWinner(board) {
-        let diagonal = checkDiagonals(board);
-        let down = checkDown(board);
-        let across = checkAcross(board);
+            if (acrossTop) { return acrossTop; }
+            if (acrossMid){ return acrossMid; }
+            if (acrossBottom) { return acrossBottom; }
+        }
 
-        if (diagonal) { return diagonal; }
-        else if (down) { return down; }
-        else if (across) { return across; }
-        return "";
-    }
+        // check for winners diagonally, down or across
+        function checkWinner(board) {
+            let diagonal = checkDiagonals(board);
+            let down = checkDown(board);
+            let across = checkAcross(board);
+
+            if (diagonal) { return diagonal; }
+            else if (down) { return down; }
+            else if (across) { return across; }
+            return "";
+        }
 
 
-    // when the DOM content loads
-    document.addEventListener('DOMContentLoaded',function(){
-        var playerTurn = document.getElementById('who-turn');
-        playerTurn.innerText = `Player ${player}'s Turn!`;
+        // when the DOM content loads
+        document.addEventListener('DOMContentLoaded',function(){
 
-        var modal = document.getElementById("modal-div");
-        var span = document.getElementsByClassName("close")[0];
+            // theme changing buttons
+            var polkaDotTheme = document.getElementById('plka-dts');
+            polkaDotTheme.onclick = function() {
+                // smaller squares
+                let smallSquares = document.getElementsByClassName('square-sm');
+                for (var i = 0; i < smallSquares.length; i++) { smallSquares[i].style.backgroundColor = 'white'; }
+                // webpage body
+                let body = document.getElementById('body');
+                body.style.backgroundPosition = "center";
+                body.style.fontFamily = "'Poppins', sans-serif";
+                body.style.backgroundImage = "url('https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Polka_dots.svg/1200px-Polka_dots.svg.png')";
+            }
+            var blackWhiteTheme = document.getElementById('blck-wht');
+            blackWhiteTheme.onclick = function() {
+                // smaller squares
+                let smallSquares = document.getElementsByClassName('square-sm');
+                for (var i = 0; i < smallSquares.length; i++) { smallSquares[i].style.backgroundColor = 'transparent'; }
+                // webpage body
+                let body = document.getElementById('body');
+                body.style.fontFamily = "'Poppins', sans-serif";
+                body.style.backgroundColor = "white"; body.style.backgroundImage = "none";
+            }
+            var spaceTheme = document.getElementById('spce');
+            spaceTheme.onclick = function() {
+                // smaller squares
+                let smallSquares = document.getElementsByClassName('square-sm');
+                for (var i = 0; i < smallSquares.length; i++) { smallSquares[i].style.backgroundColor = 'Goldenrod'; }
+                // webpage body
+                let body = document.getElementById('body');
+                body.style.backgroundRepeat = 'no-repeat'; body.style.backgroundSize = 'cover'; body.style.backgroundPosition = "center";
+                body.style.fontFamily = '"Comic Sans MS", cursive, sans-serif';
+                body.style.backgroundImage = "url('https://image.freepik.com/free-photo/cardboard-sheet-paper-abstract-texture-background_7182-2191.jpg')";
+            }
 
-        let gameBoard = loadBoard(); // load the empty board
-        let gameBtn = document.getElementById("game-btn"); // button to begin game
-        if (gameBoard) {
+            let playerTurn = document.getElementById('who-turn');
+            let scoreText = document.getElementById('curr-score');
+            
+            playerTurn.innerText = `Player ${player}'s Turn!`;
+            scoreText.innerText = `Player X: ${currentScore['X']} - Player O: ${currentScore['O']}`;
 
-            // get all squares on board
-            let squares = document.getElementsByClassName("square-sm");
-            for (var i = 0; i < squares.length; i++) {
-                squares[i].onclick = function() { // onclick method for square
-                    let square = document.getElementById(this.id); // get square object
-                    
-                    // create new text for square and add styling
-                    var playerNow = document.createElement('h1');
-                    playerNow.id = "player-" + this.id;
-                    console.log(playerNow.id);
-                    playerNow.innerText = player;
-                    
-                    playerNow.style.fontFamily = "'Poppins', sans-serif"; playerNow.style.fontSize = "60px";
-                    playerNow.style.position = 'fixed'; playerNow.style.marginLeft = '50'; playerNow.style.marginRight = '50';
-                    playerNow.style.marginTop = '40'; playerNow.style.marginBottom = '500';
-                    
-                    // set turn in gameboard
-                    if (gameBoard.get(this.id) === "") { // if the spot is not filled
-                        gameBoard.set(this.id,player);
-                        square.appendChild(playerNow);
-                        turn += 1;
-                        let win = checkWinner(gameBoard);
+            let modal = document.getElementById("modal-div");
+            let span = document.getElementsByClassName("close")[0];
 
-                        // if board becomes filled with no winners
-                        if (!win && turn == 9) {
-                            gameBoard = loadBoard();
-                            document.getElementById('modal-header').innerText = `The Board is Filled! Try Again.`;
-                            modal.style.display = "block";
-                            span.onclick = function() { // clear board and being new game
-                                modal.style.display = "none";
-                                turn = 0;
-                                for (var j = 1; j < 10; j++) { // clear all turns on board
-                                    var elem = document.getElementById("player-" + j);
-                                    if (elem) { elem.parentNode.removeChild(elem); }
+            let gameBoard = loadBoard(); // load the empty board
+            let gameBtn = document.getElementById("game-btn"); // button to begin game
+            if (gameBoard) {
+
+                // get all squares on board
+                let squares = document.getElementsByClassName("square-sm");
+                for (var i = 0; i < squares.length; i++) {
+                    squares[i].onclick = function() { // onclick method for square
+                        let square = document.getElementById(this.id); // get square object
+                        
+                        // create new text for square and add styling
+                        let playerNow = document.createElement('h1');
+                        playerNow.id = "player-" + this.id;
+                        playerNow.innerText = player;
+                        
+                        playerNow.style.fontSize = "60px"; playerNow.style.marginTop = '10px';
+                        playerNow.style.position = 'fixed'; playerNow.style.marginLeft = '21px'; playerNow.style.marginRight = '25px';
+                        
+                        // set turn in gameboard
+                        if (gameBoard.get(this.id) === "") { // if the spot is not filled
+                            gameBoard.set(this.id,player);
+                            square.appendChild(playerNow);
+                            turn += 1;
+                            let win = checkWinner(gameBoard);
+
+                            // if board becomes filled with no winners
+                            if (!win && turn == 9) {
+                                gameBoard = loadBoard();
+                                document.getElementById('modal-header').innerText = `The Board is Filled! Try Again.`;
+                                modal.style.display = "block";
+                                span.onclick = function() { // clear board and being new game
                                     modal.style.display = "none";
+                                    turn = 0;
+                                    for (var j = 1; j < 10; j++) { // clear all turns on board
+                                        let elem = document.getElementById("player-" + j);
+                                        if (elem) { elem.parentNode.removeChild(elem); }
+                                        modal.style.display = "none";
+                                    }
                                 }
                             }
-                        }
-                        if (win) { // if a winner is found
-                            gameBoard = loadBoard();
-                            document.getElementById('modal-header').innerText = `${player} Is The Winner!`;
-                            modal.style.display = "block";
-                            span.onclick = function() { // clear board and being new game
-                                modal.style.display = "none";
-                                turn = 0;
-                                for (var j = 1; j < 10; j++) { // clear all turns on board
-                                    var elem = document.getElementById("player-" + j);
-                                    if (elem) { elem.parentNode.removeChild(elem); }
+                            if (win) { // if a winner is found
+                                gameBoard = loadBoard();
+                                currentScore[player] += 1;
+                                scoreText.innerText = `Player X: ${currentScore['X']} - Player O: ${currentScore['O']}`;
+                                document.getElementById('modal-header').innerText = `${player} Is The Winner!`;
+
+                                modal.style.display = "block";
+                                span.onclick = function() { // clear board and being new game
                                     modal.style.display = "none";
+                                    turn = 0;
+                                    for (var j = 1; j < 10; j++) { // clear all turns on board
+                                        var elem = document.getElementById("player-" + j);
+                                        if (elem) { elem.parentNode.removeChild(elem); }
+                                        modal.style.display = "none";
+                                    }
                                 }
                             }
-                        }
-                        if (i % 2 === 0) { // change players per turn
-                            if (player === "X") { player = "O"; }
-                            else { player = "X"; }
-                        } else if (i % 2 !== 0) { // depends on even/odd (every other turn)
-                            if (player === "X") { player = "O"; }
-                            else { player = "X"; }
-                        }
-                        playerTurn.innerText = `Player ${player}'s Turn!`;
-                    } else { // if the player tries to go for a spot that is already taken
-                        document.getElementById('modal-header').innerText = "That Spot is Taken!";
-                        modal.style.display = "block";
-                        span.onclick = function() {
-                            modal.style.display = "none";
+                            if (i % 2 === 0) { // change players per turn
+                                if (player === "X") { player = "O"; }
+                                else { player = "X"; }
+                            } else if (i % 2 !== 0) { // depends on even/odd (every other turn)
+                                if (player === "X") { player = "O"; }
+                                else { player = "X"; }
+                            }
+                            playerTurn.innerText = `Player ${player}'s Turn!`;
+                        } else { // if the player tries to go for a spot that is already taken
+                            document.getElementById('modal-header').innerText = "That Spot is Taken!";
+                            modal.style.display = "block";
+                            span.onclick = function() {
+                                modal.style.display = "none";
+                            }
                         }
                     }
                 }
             }
-        }
-    })
-</script>
-<style>
-/* large square */
-.square {
-    height:500px;
-    width:500px;
-    margin-left:auto;
-    margin-right:auto;
-    border: 1px solid black;
-    background-color:transparent;
-    text-align:center;
-}
-/* small square */
-.square-sm {
-    height:132px;
-    width:132px;
-    margin-left:auto;
-    margin-right:auto;
-    border: 1px solid black;
-    background-color:transparent;
-    position:relative;
-    padding:15px;
-    display:inline-block;
-}
-/* popup modal styling */
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-    background-color: rgb(0,0,0);
-    background-color: rgba(0,0,0,0.4);
-  }
-  .modal-content {
-    text-align:center;
-    background-color: #fefefe;
-    margin: 15% auto;
-    padding: 20px;
-    border: 1px solid #888;
-    width: 275px;
-  }
-  .close {
-    color: #aaa;
-    float: right;
-    font-size: 28px;
-    font-weight: bold;
-  }
-  .close:hover,
-  .close:focus {
-    color: black;
-    text-decoration: none;
-    cursor: pointer;
-  }
-</style>
-<body>
-    <!-- display current turn -->
-    <div style="width:20%;float:left;padding-left:15px;">
-        <h1 style="color:black;font-family:'Poppins', sans-serif;" id="who-turn"></h1>
-    </div>
+        })
+    </script>
+    <style>
+    /* large square */
+    .square {
+        margin:0px;
+        width:400px;
+        margin-left:auto;
+        margin-right:auto;
+        background-color:transparent;
+        text-align:center;
+    }
+    /* small square */
+    .square-sm {
+        height:110px;
+        width:110px;
+        margin-left:auto;
+        margin-right:auto;
+        border: 1px solid black;
+        background-color:transparent;
+        position:relative;
+        padding:15px;
+        display:inline-block;
+    }
+    /* square div for theme picker */
+    .theme-div {
+        margin:0px;
+        margin-top:15px;
+        margin-left:auto;
+        margin-right:auto;
+        text-align:center;
+    }
+    /* square for theme-picker */
+    .square-theme {
+        height:50px;
+        width:50px;
+        margin-left:auto;
+        margin-right:auto;
+        border: 1px solid black;
+        background-color:transparent;
+        position:relative;
+        display:inline-block;
+    }
+    /* popup modal styling */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgb(0,0,0);
+        background-color: rgba(0,0,0,0.4);
+    }
+    .modal-content {
+        text-align:center;
+        background-color: #fefefe;
+        margin: 15% auto;
+        padding: 20px;
+        border: 1px solid #888;
+        width: 275px;
+    }
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+    .close:hover,
+    .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
+    </style>
+    <body style="font-family:'Poppins', sans-serif" id="body">
+        <div>
+            <!-- display current turn -->
+            <div style="text-align:center;margin-top:50px;">
+                <h1 style="color:black;" id="who-turn"></h1>
+                <h5 id="curr-score"></h5>
+            </div>
 
-    <!-- modal for error/winner messages -->
-    <div style="color:#E9002B;font-family:'Poppins', sans-serif;" id="modal-div" class="modal">
-        <!-- modal content -->
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h1 id="modal-header"></h1>
+            <!-- modal for error/winner messages -->
+            <div id="modal-div" class="modal">
+                <!-- modal content -->
+                <div class="modal-content">
+                    <span class="close">&times;</span>
+                    <h1 id="modal-header"></h1>
+                </div>
+            </div>
+
+            <!-- game board (large square with 9 smaller squares) -->
+            <div id='square' class="square">
+                <div id="1" class="square-sm"></div>
+                <div id="2" class="square-sm"></div>
+                <div id="3" class="square-sm"></div>
+                <br/>
+                <div id="4" class="square-sm"></div>
+                <div id="5" class="square-sm"></div>
+                <div id="6" class="square-sm"></div>
+                <br/>
+                <div id="7" class="square-sm"></div>
+                <div id="8" class="square-sm"></div>
+                <div id="9" class="square-sm"></div>
+            </div>
+
+            <div class="theme-div">
+                <div style="background-color:goldenrod;" id='spce' class="square-theme"></div>
+                <div style="background-color:white;" id="blck-wht" class="square-theme"><div style="height:100%;background-color:black;float:left;width:55%;"></div></div>
+                <div style="background-size:cover;background-position:center;background-image:url('https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Polka_dots.svg/1200px-Polka_dots.svg.png');" id='plka-dts' class="square-theme"></div>
+            </div>
+
         </div>
-    </div>
-
-    <!-- game board (large square with 9 smaller squares) -->
-    <div class="square">
-        <div id="1" class="square-sm"></div>
-        <div id="2" class="square-sm"></div>
-        <div id="3" class="square-sm"></div>
-        <br/>
-        <div id="4" class="square-sm"></div>
-        <div id="5" class="square-sm"></div>
-        <div id="6" class="square-sm"></div>
-        <br/>
-        <div id="7" class="square-sm"></div>
-        <div id="8" class="square-sm"></div>
-        <div id="9" class="square-sm"></div>
-    </div>
-</body>
+    </body>
 </html>
