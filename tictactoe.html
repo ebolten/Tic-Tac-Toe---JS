@@ -2,7 +2,7 @@
 <script>
     let players = ['X','O'];
     let player = players[Math.floor(Math.random() * 2)];
-
+    let turn = 0;
   
     // load new hashmap with board
     function loadBoard() {
@@ -13,7 +13,7 @@
         return gameBoard;
     }
 
-
+    // count the number of occurences of X or O in the array
     function countOccurence(arr) {
         numX = 0;
         numO = 0;
@@ -61,36 +61,31 @@
         if (acrossBottom) { return acrossBottom; }
     }
 
-
+    // check for winners diagonally, down or across
     function checkWinner(board) {
         let diagonal = checkDiagonals(board);
         let down = checkDown(board);
         let across = checkAcross(board);
 
-        if (diagonal) { 
-            return diagonal; 
-        }
-        else if (down) { 
-            return down; 
-        }
-        else if (across) { 
-            return across; 
-        }
+        if (diagonal) { return diagonal; }
+        else if (down) { return down; }
+        else if (across) { return across; }
         return "";
     }
 
 
     // when the DOM content loads
     document.addEventListener('DOMContentLoaded',function(){
+        var playerTurn = document.getElementById('who-turn');
+        playerTurn.innerText = `Player ${player}'s Turn!`;
+
         var modal = document.getElementById("modal-div");
         var span = document.getElementsByClassName("close")[0];
 
         let gameBoard = loadBoard(); // load the empty board
         let gameBtn = document.getElementById("game-btn"); // button to begin game
         if (gameBoard) {
-            //gameBtn.style.visibility = "visible"; // game button becomes visible after board loads
 
-            //gameBtn.onclick = function() {
             // get all squares on board
             let squares = document.getElementsByClassName("square-sm");
             for (var i = 0; i < squares.length; i++) {
@@ -98,26 +93,51 @@
                     let square = document.getElementById(this.id); // get square object
                     
                     // create new text for square and add styling
-                    playerNow = document.createElement('h1');
+                    var playerNow = document.createElement('h1');
+                    playerNow.id = "player-" + this.id;
+                    console.log(playerNow.id);
                     playerNow.innerText = player;
+                    
+                    playerNow.style.fontFamily = "'Poppins', sans-serif"; playerNow.style.fontSize = "60px";
                     playerNow.style.position = 'fixed'; playerNow.style.marginLeft = '50'; playerNow.style.marginRight = '50';
-                    playerNow.style.marginTop = '50'; playerNow.style.marginBottom = '50';
+                    playerNow.style.marginTop = '40'; playerNow.style.marginBottom = '500';
                     
                     // set turn in gameboard
                     if (gameBoard.get(this.id) === "") { // if the spot is not filled
                         gameBoard.set(this.id,player);
                         square.appendChild(playerNow);
-
+                        turn += 1;
                         let win = checkWinner(gameBoard);
-                        if (win) {
-                            document.getElementById('modal-header').innerText = `${player} Is The Winner!`;
+
+                        // if board becomes filled with no winners
+                        if (!win && turn == 9) {
+                            gameBoard = loadBoard();
+                            document.getElementById('modal-header').innerText = `The Board is Filled! Try Again.`;
                             modal.style.display = "block";
-                            // when the user clicks anywhere outside of the modal, close it
-                            span.onclick = function() {
+                            span.onclick = function() { // clear board and being new game
                                 modal.style.display = "none";
+                                turn = 0;
+                                for (var j = 1; j < 10; j++) { // clear all turns on board
+                                    var elem = document.getElementById("player-" + j);
+                                    if (elem) { elem.parentNode.removeChild(elem); }
+                                    modal.style.display = "none";
+                                }
                             }
                         }
-
+                        if (win) { // if a winner is found
+                            gameBoard = loadBoard();
+                            document.getElementById('modal-header').innerText = `${player} Is The Winner!`;
+                            modal.style.display = "block";
+                            span.onclick = function() { // clear board and being new game
+                                modal.style.display = "none";
+                                turn = 0;
+                                for (var j = 1; j < 10; j++) { // clear all turns on board
+                                    var elem = document.getElementById("player-" + j);
+                                    if (elem) { elem.parentNode.removeChild(elem); }
+                                    modal.style.display = "none";
+                                }
+                            }
+                        }
                         if (i % 2 === 0) { // change players per turn
                             if (player === "X") { player = "O"; }
                             else { player = "X"; }
@@ -125,24 +145,21 @@
                             if (player === "X") { player = "O"; }
                             else { player = "X"; }
                         }
-                    } else {
+                        playerTurn.innerText = `Player ${player}'s Turn!`;
+                    } else { // if the player tries to go for a spot that is already taken
                         document.getElementById('modal-header').innerText = "That Spot is Taken!";
                         modal.style.display = "block";
-                        // when the user clicks anywhere outside of the modal, close it
                         span.onclick = function() {
                             modal.style.display = "none";
                         }
                     }
-
                 }
-                
             }
         }
-        //}
     })
 </script>
-
 <style>
+/* large square */
 .square {
     height:500px;
     width:500px;
@@ -152,6 +169,7 @@
     background-color:transparent;
     text-align:center;
 }
+/* small square */
 .square-sm {
     height:132px;
     width:132px;
@@ -163,7 +181,7 @@
     padding:15px;
     display:inline-block;
 }
-/* the modal window */
+/* popup modal styling */
 .modal {
     display: none;
     position: fixed;
@@ -176,8 +194,6 @@
     background-color: rgb(0,0,0);
     background-color: rgba(0,0,0,0.4);
   }
-  
-  /* modal content */
   .modal-content {
     text-align:center;
     background-color: #fefefe;
@@ -186,15 +202,12 @@
     border: 1px solid #888;
     width: 275px;
   }
-  
-  /* close button */
   .close {
     color: #aaa;
     float: right;
     font-size: 28px;
     font-weight: bold;
   }
-  
   .close:hover,
   .close:focus {
     color: black;
@@ -202,20 +215,22 @@
     cursor: pointer;
   }
 </style>
-
 <body>
+    <!-- display current turn -->
+    <div style="width:20%;float:left;padding-left:15px;">
+        <h1 style="color:black;font-family:'Poppins', sans-serif;" id="who-turn"></h1>
+    </div>
 
     <!-- modal for error/winner messages -->
-    <div id="modal-div" class="modal">
+    <div style="color:#E9002B;font-family:'Poppins', sans-serif;" id="modal-div" class="modal">
         <!-- modal content -->
         <div class="modal-content">
-        <span class="close">&times;</span>
-        <h1 id="modal-header" style="color:#E9002B;font-family:'Poppins', sans-serif;"></h1>
+            <span class="close">&times;</span>
+            <h1 id="modal-header"></h1>
         </div>
     </div>
 
-    <button id="game-btn" style="visibility:hidden"> Begin Game </button>
-
+    <!-- game board (large square with 9 smaller squares) -->
     <div class="square">
         <div id="1" class="square-sm"></div>
         <div id="2" class="square-sm"></div>
