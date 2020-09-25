@@ -1,6 +1,8 @@
 <html>
     <head>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <title>Tic Tac Toe</title>
+        <link rel="icon" type="image/ico" href="favicon.ico"/>
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
         <meta charset="utf-8">
@@ -92,7 +94,10 @@
             polkaDotTheme.onclick = function() {
                 // smaller squares
                 let smallSquares = document.getElementsByClassName('square-sm');
-                for (var i = 0; i < smallSquares.length; i++) { smallSquares[i].style.backgroundColor = 'white'; }
+                for (var i = 0; i < smallSquares.length; i++) {
+                    smallSquares[i].style.backgroundColor = 'white';
+                    smallSquares[i].style.border = '1px solid black';
+                }
                 // webpage body
                 let body = document.getElementById('body');
                 //body.style.backgroundPosition = "center";
@@ -104,7 +109,10 @@
             blackWhiteTheme.onclick = function() {
                 // smaller squares
                 let smallSquares = document.getElementsByClassName('square-sm');
-                for (var i = 0; i < smallSquares.length; i++) { smallSquares[i].style.backgroundColor = 'transparent'; }
+                for (var i = 0; i < smallSquares.length; i++) {
+                    smallSquares[i].style.backgroundColor = 'transparent';
+                    smallSquares[i].style.border = '1px solid black';
+                }
                 // webpage body
                 let body = document.getElementById('body');
                 body.style.fontFamily = "'Poppins', sans-serif";
@@ -114,7 +122,10 @@
             spaceTheme.onclick = function() {
                 // smaller squares
                 let smallSquares = document.getElementsByClassName('square-sm');
-                for (var i = 0; i < smallSquares.length; i++) { smallSquares[i].style.backgroundColor = 'Goldenrod'; }
+                for (var i = 0; i < smallSquares.length; i++) {
+                    smallSquares[i].style.backgroundColor = 'Goldenrod';
+                    smallSquares[i].style.border = '3px solid black';
+                }
                 // webpage body
                 let body = document.getElementById('body');
                 body.style.backgroundRepeat = 'no-repeat'; body.style.backgroundSize = 'cover'; body.style.backgroundPosition = "center";
